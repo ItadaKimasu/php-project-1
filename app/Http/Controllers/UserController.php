@@ -24,13 +24,22 @@ class UserController extends Controller
     //handle register user ajax request
     public function saveUser(Request $request) {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|max:20',
-            'email' => 'required|email|unique:users|max:100',
+            'name' => 'required|max:40',
+            'email' => 'required|email|unique:users|max:50',
             'password' => 'required|min:6|max:50',
             'cpassword' => 'required|min:6|same:password'
         ], [
-            'cpassword.same' => 'Password did not match',
-            'cpassword.required' => 'Confirm password is required!'
+            'name.required' => 'Username is required.',
+            'name.max' => 'Must not be exceed 40 characters.',
+            'email.required' => 'Email is required.',
+            'email.unique' => 'Email already exists.',
+            'email.max' => 'Must not be exceed 50 characters.',
+            'password.required' => 'Password is required.',
+            'password.min' => 'Must be at least 6 characters.',
+            'password.max' => 'Must not be exceed 50 characters.',
+            'cpassword.required' => 'Confirm password is required.',
+            'cpassword.min' => 'Must be at least 6 characters.',
+            'cpassword.same' => 'Password did not match.'
         ]);
 
 

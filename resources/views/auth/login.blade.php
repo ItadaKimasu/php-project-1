@@ -59,8 +59,10 @@
 
                 <form action="#" method="POST" class="sign_up_form">
                     @csrf
+
+                    <div id="show_success_alert"></div>
                     <h2 class="h2_title">Sign up</h2>
-                    <div class="input_field">
+                    <div class="input_field form-control">
                         <i class="fas fa-user"></i>
                         <input 
                             type = "text" 
@@ -68,9 +70,8 @@
                             id = "name"
                             placeholder = "Username" 
                         />
-                        <div class="invalid-feedback"></div>
                     </div>
-                    <div class="input_field">
+                    <div class="input_field form-control">
                         <i class="fas fa-envelope"></i>
                         <input 
                             type="email" 
@@ -78,9 +79,8 @@
                             id="email"
                             placeholder="Email" 
                         />
-                        <div class="invalid-feedback"></div>
                     </div>
-                    <div class="input_field">
+                    <div class="input_field form-control">
                         <i class="fas fa-lock"></i>
                         <input 
                             type = "password" 
@@ -88,9 +88,8 @@
                             id = "password"
                             placeholder = "Password" 
                         />
-                        <div class="invalid-feedback"></div>
                     </div>
-                    <div class="input_field">
+                    <div class="input_field form-control">
                         <i class="fas fa-lock"></i>
                         <input 
                             type = "password" 
@@ -98,7 +97,6 @@
                             id = "cpassword"
                             placeholder = "Confirm Password" 
                         />
-                        <div class="invalid-feedback"></div>
                     </div>
 
                     <input 
@@ -156,13 +154,25 @@
     const sign_in_btn = document.querySelector("#sign_in_btn");
     const sign_up_btn = document.querySelector("#sign_up_btn");
     const container = document.querySelector(".main_container");
+    const sign_in_form = document.querySelector(".sign_in_form");
+    const sign_up_form = document.querySelector(".sign_up_form");
+    const sign_in_HTML = sign_in_form.innerHTML;
+    const sign_up_HTML = sign_up_form.innerHTML;
 
     sign_up_btn.addEventListener("click", () => {
         container.classList.add("sign_up_mode");
+        if (sign_up_form.innerHTML) {
+            sign_up_form.innerHTML = sign_up_HTML;
+        }
+        sign_in_form.innerHTML = "";
     });
 
     sign_in_btn.addEventListener("click", () => {
         container.classList.remove("sign_up_mode");
+        if (sign_in_form.innerHTML) {
+            sign_in_form.innerHTML = sign_in_HTML;
+        }
+        sign_up_form.innerHTML = "";
     });
 
 
@@ -177,7 +187,22 @@
                 data: $(this).serialize(),
                 dataType: 'json',
                 success: function (res) {
-                    console.log(res);
+
+                    if(res.status == 400) {
+                        console.log(res);
+                        showError('name', res.message.name);
+                        showError('email', res.message.email);
+                        showError('password', res.message.password);
+                        showError('cpassword', res.message.cpassword);
+                        $("#signup_btn").val("SIGN UP");
+                    } else if(res.status == 200) {
+                        console.log(res);
+                        $("#show_success_alert").html(showMessage('success', res.message));
+                        $(".sign_up_form")[0].reset();
+                        removeValidationClasses(".sign_up_form");
+                        $("#signup_btn").val("SIGN UP");
+                    }
+
                 }
             });
         });

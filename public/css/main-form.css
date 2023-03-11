@@ -51,6 +51,7 @@ form{
 
 form.sign_up_form{
     opacity: 0;
+    visibility: hidden;
     z-index: 1;
 }
 
@@ -252,11 +253,13 @@ form.sign_in_form{
 
 .main_container.sign_up_mode form.sign_up_form{
     opacity: 1;
+    visibility: visible;
     z-index: 2;
 }
 
 .main_container.sign_up_mode form.sign_in_form{
     opacity: 0;
+    visibility: hidden;
     z-index: 1;
 }
 
@@ -413,4 +416,14 @@ form{
     bottom: 28%;
     left: 50%;
 }
+}
+
+
+.form-control.is-valid:focus-within {
+    border-color: #198754;
+    box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, .25);
+}
+.form-control.is-invalid:focus-within {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 .25rem rgba(220, 53, 69, .25);
 }
