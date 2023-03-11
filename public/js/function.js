@@ -1,16 +1,14 @@
-function showError(field, message) {
+function showError(field, message, placeholder) {
     if (!message) {
         $(".input_field:has(#" + field + ")")
         .addClass("is-valid")
         .removeClass("is-invalid");
-        // .children(".invalid-feedback")
-        // .text("");
+        $("#" + field)
+        .attr("placeholder", placeholder);
     } else {
         $(".input_field:has(#" + field + ")")
         .addClass("is-invalid")
         .removeClass("is-valid");
-        // .children(".invalid-feedback")
-        // .text(message);
         $("#" + field)
         .attr("placeholder", message);
     }
@@ -19,7 +17,7 @@ function showError(field, message) {
 
 function removeValidationClasses(form) {
     $(form).each(function(){
-        $(form).find(':input').removeClass('is-valid is-invalid');
+        $(form).find('.input_field').removeClass('is-valid is-invalid');
     });
 }
 

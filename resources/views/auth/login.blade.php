@@ -10,8 +10,10 @@
 
                 <form action="#" method="POST" class="sign_in_form">
                     @csrf
+
+                    {{-- <div id="show_success_alert"></div> --}}
                     <h2 class="h2_title">Sign in</h2>
-                    <div class="input_field">
+                    <div class="input_field form-control">
                         <i class="fas fa-user"></i>
                         <input 
                             type = "text" 
@@ -19,9 +21,8 @@
                             id = "name"
                             placeholder = "Username" 
                         />
-                        <div class="invalid-feedback"></div>
                     </div>
-                    <div class="input_field">
+                    <div class="input_field form-control">
                         <i class="fas fa-lock"></i>
                         <input 
                             type = "password" 
@@ -29,7 +30,6 @@
                             id = "password"
                             placeholder = "Password" 
                         />
-                        <div class="invalid-feedback"></div>
                     </div>
                     <div class="mb-1">
                         <a href="/forgot-password" class="text-decoration-none">Forgot password?</a>
@@ -151,6 +151,7 @@
 @section('scripts')
 
 <script>
+    // Script to switch between 2 form submission
     const sign_in_btn = document.querySelector("#sign_in_btn");
     const sign_up_btn = document.querySelector("#sign_up_btn");
     const container = document.querySelector(".main_container");
@@ -158,24 +159,41 @@
     const sign_up_form = document.querySelector(".sign_up_form");
     const sign_in_HTML = sign_in_form.innerHTML;
     const sign_up_HTML = sign_up_form.innerHTML;
+    sign_up_form.innerHTML = "";
 
     sign_up_btn.addEventListener("click", () => {
         container.classList.add("sign_up_mode");
-        if (sign_up_form.innerHTML) {
-            sign_up_form.innerHTML = sign_up_HTML;
-        }
-        sign_in_form.innerHTML = "";
+        setTimeout(() => {
+            if (!sign_up_form.innerHTML) {
+                sign_up_form.innerHTML = sign_up_HTML;
+            }
+            sign_in_form.innerHTML = "";
+        }, 1000);
+            
     });
 
     sign_in_btn.addEventListener("click", () => {
         container.classList.remove("sign_up_mode");
-        if (sign_in_form.innerHTML) {
-            sign_in_form.innerHTML = sign_in_HTML;
-        }
-        sign_up_form.innerHTML = "";
+        setTimeout(() => {
+            if (!sign_in_form.innerHTML) {
+                sign_in_form.innerHTML = sign_in_HTML;
+            }
+            sign_up_form.innerHTML = "";
+        }, 1000);
+            
     });
+    // end Script to switch between 2 form submission
 
 
+
+    // Script adjustments for Sign In Form
+    
+
+    // end Script adjustments for Sign In Form
+
+
+
+    // Script adjustments for Sign Up Form
     $(function () {
         $(".sign_up_form").submit(function(e) {
             e.preventDefault();
@@ -190,13 +208,36 @@
 
                     if(res.status == 400) {
                         console.log(res);
-                        showError('name', res.message.name);
-                        showError('email', res.message.email);
-                        showError('password', res.message.password);
-                        showError('cpassword', res.message.cpassword);
+                        if(res.message.name) {
+                            showError('name', res.message.name[0], '')
+                        } else {
+                            showError('name', '', 'Username');
+                        }
+
+
+                        if(res.message.email) {
+                            showError('email', res.message.email[0], '')
+                        } else {
+                            showError('email', '', 'Email');
+                        }
+
+
+                        if(res.message.password) {
+                            showError('password', res.message.password[0], '')
+                        } else {
+                            showError('password', '', 'Password');
+                        }
+
+
+                        if(res.message.cpassword) {
+                            showError('cpassword', res.message.cpassword[0], '')
+                        } else {
+                            showError('cpassword', '', 'Confirm Password');
+                        }
+                        
+
                         $("#signup_btn").val("SIGN UP");
                     } else if(res.status == 200) {
-                        console.log(res);
                         $("#show_success_alert").html(showMessage('success', res.message));
                         $(".sign_up_form")[0].reset();
                         removeValidationClasses(".sign_up_form");
@@ -206,7 +247,9 @@
                 }
             });
         });
-    })
+    });
+    // end Script adjustments for Sign Up Form
+
 </script>
     
 @endsection

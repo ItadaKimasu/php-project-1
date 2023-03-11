@@ -31,19 +31,22 @@ class UserController extends Controller
         ], [
             'name.required' => 'Username is required.',
             'name.max' => 'Must not be exceed 40 characters.',
+
             'email.required' => 'Email is required.',
             'email.unique' => 'Email already exists.',
             'email.max' => 'Must not be exceed 50 characters.',
+
             'password.required' => 'Password is required.',
             'password.min' => 'Must be at least 6 characters.',
             'password.max' => 'Must not be exceed 50 characters.',
+
             'cpassword.required' => 'Confirm password is required.',
             'cpassword.min' => 'Must be at least 6 characters.',
             'cpassword.same' => 'Password did not match.'
         ]);
 
 
-        if ($validator->fails()) {
+        if ($validator->fails()) {  
             return response()->json([
                 'status' => 400,
                 'message' => $validator->getMessageBag()
@@ -60,5 +63,11 @@ class UserController extends Controller
                'message' => 'Registered successfully!'
             ]);
         };
+    }
+
+
+    //handle login user ajax request
+    public function loginUser(Request $request) {
+        print_r($_POST);
     }
 }

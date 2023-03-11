@@ -30,9 +30,7 @@
         function redirectHome() {
             window.location.href = "/";
         }
-        // function redirectReset() {
-        //     window.location.href = "/reset-password";
-        // }
+        
     </script>
     @yield('scripts')
 
