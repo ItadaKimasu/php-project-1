@@ -1,0 +1,24 @@
+@media(max-width: 992px) {
+    #line_fix{
+        border-right: 0px !important;
+
+    }
+}
+
+
+html, main {
+    background-color: #c1bdfb;
+}
+
+body > main > div > div > div > div > div.card-header.d-flex.justify-content-between.align-items-center {
+    background-color: #6c63ff;
+}
+
+body > main > div > div > div > div > div.card-header.d-flex.justify-content-between.align-items-center > h2 {
+    color: white !important;
+}
+
+label {
+    color: blue;
+    font-weight: bold;
+}

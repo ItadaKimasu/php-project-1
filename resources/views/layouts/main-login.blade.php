@@ -30,7 +30,6 @@
         function redirectHome() {
             window.location.href = "/";
         }
-        
     </script>
     @yield('scripts')
 

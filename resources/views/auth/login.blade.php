@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.main-login')
 @section('title', "Sign in to Cunnyyy")
     
 @section('content')
@@ -11,7 +11,7 @@
                 <form action="#" method="POST" class="sign_in_form">
                     @csrf
 
-                    {{-- <div id="show_success_alert"></div> --}}
+                    <div id="login_alert"></div>
                     <h2 class="h2_title">Sign in</h2>
                     <div class="input_field form-control">
                         <i class="fas fa-user"></i>
@@ -149,9 +149,9 @@
 
 
 @section('scripts')
-
+{{-- Script to switch between 2 form submission --}}
 <script>
-    // Script to switch between 2 form submission
+    
     const sign_in_btn = document.querySelector("#sign_in_btn");
     const sign_up_btn = document.querySelector("#sign_up_btn");
     const container = document.querySelector(".main_container");
@@ -182,43 +182,31 @@
         }, 1000);
             
     });
-    // end Script to switch between 2 form submission
-
-
-
-    // Script adjustments for Sign In Form
     
+</script>
+{{-- end Script to switch between 2 form submission --}}
 
-    // end Script adjustments for Sign In Form
-
-
-
-    // Script adjustments for Sign Up Form
+{{-- Script adjustments for Sign In Form --}}
+<script>
+    
     $(function () {
-        $(".sign_up_form").submit(function(e) {
+        $(".sign_in_form").submit(function(e) {
             e.preventDefault();
-            $("#signup_btn").val("Please wait...");
+            $("#login_btn").val("Please wait...");
 
             $.ajax({
-                url: '{{ route('auth.register') }}',
+                url: '{{ route('auth.login') }}',
                 method: 'POST',
                 data: $(this).serialize(),
                 dataType: 'json',
                 success: function (res) {
+                    console.log(res);
 
-                    if(res.status == 400) {
-                        console.log(res);
+                    if (res.status == 400) {
                         if(res.message.name) {
                             showError('name', res.message.name[0], '')
                         } else {
                             showError('name', '', 'Username');
-                        }
-
-
-                        if(res.message.email) {
-                            showError('email', res.message.email[0], '')
-                        } else {
-                            showError('email', '', 'Email');
                         }
 
 
@@ -228,28 +216,33 @@
                             showError('password', '', 'Password');
                         }
 
-
-                        if(res.message.cpassword) {
-                            showError('cpassword', res.message.cpassword[0], '')
-                        } else {
-                            showError('cpassword', '', 'Confirm Password');
+                        $("#login_btn").val("LOG IN");
+                    } else if(res.status == 401) {
+                        $("#login_alert").html(showMessage('danger', res.message));
+                        removeValidationClasses(".sign_in_form");
+                        $("#login_btn").val("LOG IN");
+                    } else {
+                        if (res.status == 200 && res.message == 'Logged in successfully!') {
+                            window.location = '{{ route('profile') }}';
                         }
-                        
-
-                        $("#signup_btn").val("SIGN UP");
-                    } else if(res.status == 200) {
-                        $("#show_success_alert").html(showMessage('success', res.message));
-                        $(".sign_up_form")[0].reset();
-                        removeValidationClasses(".sign_up_form");
-                        $("#signup_btn").val("SIGN UP");
                     }
 
                 }
             });
         });
     });
-    // end Script adjustments for Sign Up Form
+    
+</script>
+{{-- end Script adjustments for Sign In Form   --}}
+
+
+{{-- Script adjustments for Sign Up Form --}}
+<script>
+
+
+
 
 </script>
+{{-- end Script adjustments for Sign Up Form   --}}
     
 @endsection

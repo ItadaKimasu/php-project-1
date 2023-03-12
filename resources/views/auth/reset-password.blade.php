@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.main-login')
 @section('title', "Reset Password")
     
 @section('content')
