@@ -7,8 +7,8 @@
         <div class="forms_container">
             <div class="signin_signup">
 
-
-                <form action="#" method="POST" class="sign_in_form">
+                @if(Request::url() == route('auth.login'))
+                <form action="{{ route('auth.login') }}" method="POST" class="sign_in_form">
                     @csrf
 
                     <div id="login_alert"></div>
@@ -55,9 +55,7 @@
                     </div>
                 </form>
 
-
-
-                <form action="#" method="POST" class="sign_up_form">
+                <form action="{{ route('auth.register') }}" method="POST" class="sign_up_form">
                     @csrf
 
                     <div id="show_success_alert"></div>
@@ -108,6 +106,7 @@
                     
                 </form>
 
+                @endif
 
             </div>
         </div>
@@ -149,45 +148,9 @@
 
 
 @section('scripts')
-{{-- Script to switch between 2 form submission --}}
-<script>
-    
-    const sign_in_btn = document.querySelector("#sign_in_btn");
-    const sign_up_btn = document.querySelector("#sign_up_btn");
-    const container = document.querySelector(".main_container");
-    const sign_in_form = document.querySelector(".sign_in_form");
-    const sign_up_form = document.querySelector(".sign_up_form");
-    const sign_in_HTML = sign_in_form.innerHTML;
-    const sign_up_HTML = sign_up_form.innerHTML;
-    sign_up_form.innerHTML = "";
-
-    sign_up_btn.addEventListener("click", () => {
-        container.classList.add("sign_up_mode");
-        setTimeout(() => {
-            if (!sign_up_form.innerHTML) {
-                sign_up_form.innerHTML = sign_up_HTML;
-            }
-            sign_in_form.innerHTML = "";
-        }, 1000);
-            
-    });
-
-    sign_in_btn.addEventListener("click", () => {
-        container.classList.remove("sign_up_mode");
-        setTimeout(() => {
-            if (!sign_in_form.innerHTML) {
-                sign_in_form.innerHTML = sign_in_HTML;
-            }
-            sign_up_form.innerHTML = "";
-        }, 1000);
-            
-    });
-    
-</script>
-{{-- end Script to switch between 2 form submission --}}
 
 {{-- Script adjustments for Sign In Form --}}
-<script>
+<script id="sign_in_script">
     
     $(function () {
         $(".sign_in_form").submit(function(e) {
@@ -236,13 +199,120 @@
 {{-- end Script adjustments for Sign In Form   --}}
 
 
-{{-- Script adjustments for Sign Up Form --}}
-<script>
 
+{{-- Script adjustments for Sign Up Form --}}
+<script id="sign_up_script">
+    $(function () {
+        $(".sign_up_form").submit(function(e) {
+            e.preventDefault();
+            $("#signup_btn").val("Please wait...");
+
+            $.ajax({
+                url: '{{ route('auth.register') }}',
+                method: 'POST',
+                data: $(this).serialize(),
+                dataType: 'json',
+                success: function (res) {
+                    console.log(res);
+
+                    if(res.status == 400) {
+                        if(res.message.name) {
+                            showError('name', res.message.name[0], '')
+                        } else {
+                            showError('name', '', 'Username');
+                        }
+
+
+                        if(res.message.email) {
+                            showError('email', res.message.email[0], '')
+                        } else {
+                            showError('email', '', 'Email');
+                        }
+
+
+                        if(res.message.password) {
+                            showError('password', res.message.password[0], '')
+                        } else {
+                            showError('password', '', 'Password');
+                        }
+
+
+                        if(res.message.cpassword) {
+                            showError('cpassword', res.message.cpassword[0], '')
+                        } else {
+                            showError('cpassword', '', 'Confirm Password');
+                        }
+                        
+
+                        $("#signup_btn").val("SIGN UP");
+                    } else if(res.status == 200) {
+                        $("#show_success_alert").html(showMessage('success', res.message));
+                        $(".sign_up_form")[0].reset();
+                        removeValidationClasses(".sign_up_form");
+                        $("#signup_btn").val("SIGN UP");
+                    }
+
+                }
+            });
+        });
+    });
 
 
 
 </script>
 {{-- end Script adjustments for Sign Up Form   --}}
+
+
+
+{{-- Script to switch between 2 form submission --}}
+<script>
+    
+    const sign_in_btn = document.querySelector("#sign_in_btn");
+    const sign_up_btn = document.querySelector("#sign_up_btn");
+    const container = document.querySelector(".main_container");
+    
+    const sign_in_form = document.querySelector(".sign_in_form");
+    const sign_up_form = document.querySelector(".sign_up_form");
+    const sign_in_HTML = sign_in_form.innerHTML;
+    const sign_up_HTML = sign_up_form.innerHTML;
+    sign_up_form.innerHTML = "";
+
+    const sign_in_script = document.querySelector("#sign_in_script");
+    const sign_up_script = document.querySelector("#sign_up_script");
+    const sign_in_content = sign_in_script.textContent;
+    const sign_up_content = sign_up_script.textContent;
+    sign_up_script.textContent = "";
+
+    sign_up_btn.addEventListener("click", () => {
+        container.classList.add("sign_up_mode");
+        sign_in_script.textContent = "";
+        setTimeout(() => {
+            if (!sign_up_form.innerHTML) {
+                sign_up_script.textContent = sign_up_content;
+                sign_up_form.innerHTML = sign_up_HTML;
+            }
+            sign_in_form.innerHTML = "";
+        }, 1000);
+            
+    });
+
+    sign_in_btn.addEventListener("click", () => {
+        container.classList.remove("sign_up_mode");
+        sign_up_script.textContent = "";
+        setTimeout(() => {
+            if (!sign_in_form.innerHTML) {
+                sign_in_script.textContent = sign_in_content;
+                sign_in_form.innerHTML = sign_in_HTML;
+            }
+            sign_up_form.innerHTML = "";
+        }, 1000);
+        
+    });
+
+
+    
+</script>
+{{-- end Script to switch between 2 form submission --}}
+
     
 @endsection
