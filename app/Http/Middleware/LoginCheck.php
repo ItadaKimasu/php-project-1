@@ -19,16 +19,25 @@ class LoginCheck
         $IlluminateResponse = 'Illuminate\Http\Response';
         $SymfonyResopnse = 'Symfony\Component\HttpFoundation\Response';
 
+        
+
         if (!session()->has('loggedInUser') && 
             $request->path() != '/') 
         {
             return redirect('/');
         }
+
         if (session()->has('loggedInUser') && 
             $request->path() == '/') 
         {
             return back();
         }
+
+        // if (session()->has('loggedInUser') &&
+        //     $request->path() == '/forgot-password')
+        // {
+        //     return back();
+        // }
 
 
         if($response instanceof $IlluminateResponse) {

@@ -7,7 +7,6 @@
         <div class="forms_container">
             <div class="signin_signup">
 
-                @if(Request::url() == route('auth.login'))
                 <form action="{{ route('auth.login') }}" method="POST" class="sign_in_form">
                     @csrf
 
@@ -106,7 +105,6 @@
                     
                 </form>
 
-                @endif
 
             </div>
         </div>
@@ -264,7 +262,7 @@
 
 
 
-{{-- Script to switch between 2 form submission --}}
+{{-- Script to handle the switching between two forms --}}
 <script>
     
     const sign_in_btn = document.querySelector("#sign_in_btn");
@@ -312,7 +310,7 @@
 
     
 </script>
-{{-- end Script to switch between 2 form submission --}}
+{{-- end Script to handle the switching between two forms --}}
 
     
 @endsection
