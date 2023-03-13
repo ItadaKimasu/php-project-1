@@ -9,12 +9,14 @@
 
                 <form action="#" method="POST" class="forgot_form">
                     @csrf
+
+                    <div id="forgot_alert"></div>
                     <h2 class="h2_title">Forgot Your Password?</h2>
                     
                     <div class="mb-3 text-secondary">
                         Enter your e-mail address and we will send you a link to reset your password.
                     </div>
-                    <div class="input_field">
+                    <div class="input_field form-control">
                         <i class="fas fa-user"></i>
                         <input 
                             type = "email" 
@@ -22,7 +24,6 @@
                             id = "email"
                             placeholder = "Email" 
                         />
-                        <div class="invalid-feedback"></div>
                     </div>
 
                     <input 
@@ -59,4 +60,44 @@
 
 @endsection
 
+@section('scripts')
+<script>
+    $(function() {
+        $(".forgot_form").submit(function(e) {
+            e.preventDefault();
+            $("#forgot_btn").val('Please wait...');
+            $.ajax({
+                url: '{{ route('auth.forgot') }}',
+                method: 'POST',
+                data: $(this).serialize(),
+                dataType: 'json',
+                success: function(res) {
+                    console.log(res);
+                    if (res.status == 400) {
+                        if(res.message.email) {
+                            showError('email', res.message.email[0], '')
+                        } else {
+                            showError('email', '', 'Email');
+                        }
+
+                        $("#forgot_btn").val("CONTINUE");
+                    } else if(res.status == 401) {
+                        $("#forgot_alert").html(showMessage('danger', res.message));
+                        removeValidationClasses(".forgot_form");
+                        $("#forgot_btn").val("CONTINUE");
+                    } else {
+                        $("#forgot_alert").html(showMessage('success', res.message));
+                        $(".forgot_form")[0].reset();
+                        removeValidationClasses(".forgot_form");
+                        $("#forgot_btn").val("CONTINUE");
+                        window.location = '{{ route('reset') }}';
+                    }
+                }
+            });
+        });
+    });
+</script>
+
+
+@endsection
             

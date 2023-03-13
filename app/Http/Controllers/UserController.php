@@ -2,25 +2,47 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\ForgotPassword;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
+    public $email = "aa@aa";
+
+    // public function myAction() {
+    //     $userControllerInstance = new UserController();
+    //     return view('my-view', ['userControllerInstance' => $userControllerInstance]);
+    // }
+    
     public function index() {
         return view('auth.login');
     }
 
     public function forgot() {
-        return view('auth.forgot-password');
+        if (session()->has('loggedInUser')) {
+            return redirect('/profile');
+        } else {
+            return view('auth.forgot-password');
+        }
     }
 
     public function reset() {
-        return view('auth.reset-password');
+        // $emailReset = "";
+        $emailReset = $this->email;
+        if (session()->has('loggedInUser')) {
+            return redirect('/profile');
+        } else {
+            // print_r($emailReset);
+            return view('auth.reset-password', ['email' => $emailReset]);
+        }
     }
 
     //handle register user ajax request
@@ -180,5 +202,97 @@ class UserController extends Controller
            'status' => 200,
            'message' => 'Profile updated successfully!'
         ]);
+    }
+
+
+    // handle forgot password request
+    public function forgotPassword(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email|max:50',
+        ], [
+            'email.required' => 'Email is required.',
+            'email.max' => 'Must not be exceed 50 characters.',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+               'status' => 400,
+               'message' => $validator->getMessageBag()
+            ]);
+        } else {
+            $token = Str::uuid();
+            $user = DB::table('users')->where('email', $request->email) -> first();
+            $details = [
+                'body' => route('reset', ['email' => $request->email, 'token' => $token])
+            ];
+
+            if ($user) {
+                User::where('email', $request->email)->update([
+                    'token' => $token,
+                    'token_expires' => Carbon::now()->addMinutes(10)->toDateTimeString() //expire link reset password
+                ]);
+
+                // Mail::to($request->email)->send(new ForgotPassword($details));
+                return response()->json([
+                    // $this->saveEmailForgot($request->email),
+                   'status' => 200,
+                   'message' => 'Send link to reset password successfully!',
+
+                ]);
+            } else {
+                return response()->json([
+                   'status' => 401,
+                   'message' => 'Email not found!'
+                ]);
+            }
+        }
+    }
+
+    // public function saveEmailForgot($email) {
+    //     $this->email = $email;
+    // }
+
+    public function resetPassword(Request $request) {
+        print_r($_POST);
+        
+
+        // $validator = Validator::make($request->all(), [
+        //     'password' => 'required|min:6|max:50',
+        //     'cpassword' => 'required|min:6|same:password',
+        // ], [
+        //     'password.required' => 'Password is required.',
+        //     'password.min' => 'Must be at least 6 characters.',
+        //     'password.max' => 'Must not be exceed 50 characters.',
+
+        //     'cpassword.required' => 'Confirm password is required.',
+        //     'cpassword.min' => 'Must be at least 6 characters.',
+        //     'cpassword.same' => 'Password did not match.',
+        // ]);
+
+        // if ($validator->fails()) {
+        //     return response()->json([
+        //        'status' => 400,
+        //        'message' => $validator->getMessageBag()
+        //     ]);
+        // } else {
+        //     $user = DB::table('users')->where('email', $request->email) -> first();
+            
+
+        //     if ($user) {
+        //         User::where('email', $request->email)->update([
+        //             'password' => Hash::make($request->password),
+        //         ]);
+
+        //         return response()->json([
+        //            'status' => 200,
+        //            'message' => 'New password updated!&nbsp;&nbsp;<a href="/">LOGIN</a>'
+        //         ]);
+        //     } else {
+        //         return response()->json([
+        //            'status' => 401,
+        //            'message' => 'Reset link expired! Request for a new reset password link!'
+        //         ]);
+        //     }
+        // }
     }
 }

@@ -7,8 +7,23 @@
         <div class="forms_container">
             <div class="signin_signup div_forgot">
 
+
                 <form action="#" method="POST" class="reset_form">
                     @csrf
+
+                    {{-- <input type="hidden" name="email" id="user_email" value="{{ $emailReset }}"> --}}
+                    <div class="input_field form-control" style="visibility: hidden">
+                        <i class="fas fa-lock"></i>
+                        <input 
+                            type = "email" 
+                            name = "email"
+                            id = "email"
+                            placeholder = "Email" 
+                            {{-- value="{{ $userControllerInstance->email }}" --}}
+                        disabled>
+                    </div>
+
+                    <div id="reset_alert"></div>
                     <h2 class="h2_title">Reset Password</h2>
 
                     <div class="mb-3 text-secondary">
@@ -16,7 +31,7 @@
                         You need to change your password.
                     </div>
                     
-                    <div class="input_field">
+                    <div class="input_field form-control">
                         <i class="fas fa-lock"></i>
                         <input 
                             type = "password" 
@@ -24,9 +39,8 @@
                             id = "password"
                             placeholder = "Password" 
                         />
-                        <div class="invalid-feedback"></div>
                     </div>
-                    <div class="input_field">
+                    <div class="input_field form-control">
                         <i class="fas fa-lock"></i>
                         <input 
                             type = "password" 
@@ -34,7 +48,6 @@
                             id = "cpassword"
                             placeholder = "Confirm Password" 
                         />
-                        <div class="invalid-feedback"></div>
                     </div>
 
                     <input 
@@ -68,5 +81,56 @@
 
         </div>
     </div>
+
+@endsection
+
+@section('scripts')
+
+
+<script>
+    $(function() {
+        $(".reset_form").submit(function(e) {
+            e.preventDefault();
+            $("#reset_btn").val('Please wait...');
+            $.ajax({
+                url: '{{ route('auth.reset') }}',
+                method: 'POST',
+                data: $(this).serialize(),
+                dataType: 'json',
+                success: function(res) {
+                    console.log(res);
+                    // if (res.status == 400) {
+                    //     if(res.message.npass) {
+                    //         showError('password', res.message.npass[0], '')
+                    //     } else {
+                    //         showError('password', '', 'Password');
+                    //     }
+
+                    //     if(res.message.cnpass) {
+                    //         showError('cpassword', res.message.cnpass[0], '')
+                    //     } else {
+                    //         showError('cpassword', '', 'Confirm Password');
+                    //     }
+
+                    //     $("#reset_btn").val("SUBMIT");
+                    // } else if(res.status == 401) {
+                    //     $("#reset_alert").html(showMessage('danger', res.message));
+                    //     removeValidationClasses(".reset_form");
+                    //     $("#reset_btn").val("SUBMIT");
+                    // } else {
+                    //     $("#reset_alert").html(showMessage('success', res.message));
+                    //     $(".reset_form")[0].reset();
+                    //     removeValidationClasses(".reset_form");
+                    //     $("#reset_btn").val("SUBMIT");
+                    //     // window.location = '{{ route('auth.login') }}';
+                    // }
+                }
+            });
+        });
+    });
+
+
+</script>
+
 
 @endsection
