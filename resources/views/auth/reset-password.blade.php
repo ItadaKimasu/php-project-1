@@ -3,8 +3,12 @@
     
 @section('content')
 
-    <div class="main_container">
-        <div class="forms_container">
+
+<div class="main_container">
+    <div class="alert alert-danger alert-dismissible fade show" role="alert" style="z-index: 10;">
+        <strong>This feature on this page is not yet complete! Features may not work correctly!</strong>
+    </div>;
+    <div class="forms_container">
             <div class="signin_signup div_forgot">
 
 
@@ -12,16 +16,16 @@
                     @csrf
 
                     {{-- <input type="hidden" name="email" id="user_email" value="{{ $emailReset }}"> --}}
-                    <div class="input_field form-control" style="visibility: hidden">
+                    {{-- <div class="input_field form-control" style="visibility: hidden">
                         <i class="fas fa-lock"></i>
                         <input 
                             type = "email" 
                             name = "email"
                             id = "email"
                             placeholder = "Email" 
-                            {{-- value="{{ $userControllerInstance->email }}" --}}
+                            value="{{ $userControllerInstance->email }}"
                         disabled>
-                    </div>
+                    </div> --}}
 
                     <div id="reset_alert"></div>
                     <h2 class="h2_title">Reset Password</h2>
@@ -99,31 +103,30 @@
                 dataType: 'json',
                 success: function(res) {
                     console.log(res);
-                    // if (res.status == 400) {
-                    //     if(res.message.npass) {
-                    //         showError('password', res.message.npass[0], '')
-                    //     } else {
-                    //         showError('password', '', 'Password');
-                    //     }
+                    if (res.status == 400) {
+                        if(res.message.password) {
+                            showError('password', res.message.password[0], '')
+                        } else {
+                            showError('password', '', 'Password');
+                        }
 
-                    //     if(res.message.cnpass) {
-                    //         showError('cpassword', res.message.cnpass[0], '')
-                    //     } else {
-                    //         showError('cpassword', '', 'Confirm Password');
-                    //     }
+                        if(res.message.cpassword) {
+                            showError('cpassword', res.message.cpassword[0], '')
+                        } else {
+                            showError('cpassword', '', 'Confirm Password');
+                        }
 
-                    //     $("#reset_btn").val("SUBMIT");
-                    // } else if(res.status == 401) {
-                    //     $("#reset_alert").html(showMessage('danger', res.message));
-                    //     removeValidationClasses(".reset_form");
-                    //     $("#reset_btn").val("SUBMIT");
-                    // } else {
-                    //     $("#reset_alert").html(showMessage('success', res.message));
-                    //     $(".reset_form")[0].reset();
-                    //     removeValidationClasses(".reset_form");
-                    //     $("#reset_btn").val("SUBMIT");
-                    //     // window.location = '{{ route('auth.login') }}';
-                    // }
+                        $("#reset_btn").val("SUBMIT");
+                    } else if(res.status == 401) {
+                        $("#reset_alert").html(showMessage('danger', res.message));
+                        removeValidationClasses(".reset_form");
+                        $("#reset_btn").val("SUBMIT");
+                    } else {
+                        $("#reset_alert").html(showMessage('success', res.message));
+                        $(".reset_form")[0].reset();
+                        removeValidationClasses(".reset_form");
+                        $("#reset_btn").val("SUBMIT");
+                    }
                 }
             });
         });

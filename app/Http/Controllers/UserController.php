@@ -15,7 +15,7 @@ use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
-    public $email = "aa@aa";
+    // public $email = "aa@aa";
 
     // public function myAction() {
     //     $userControllerInstance = new UserController();
@@ -35,8 +35,8 @@ class UserController extends Controller
     }
 
     public function reset() {
-        // $emailReset = "";
-        $emailReset = $this->email;
+        $emailReset = "";
+        // $emailReset = $this->email;
         if (session()->has('loggedInUser')) {
             return redirect('/profile');
         } else {
@@ -253,46 +253,45 @@ class UserController extends Controller
     // }
 
     public function resetPassword(Request $request) {
-        print_r($_POST);
+        // print_r($_POST);
         
+        $validator = Validator::make($request->all(), [
+            'password' => 'required|min:6|max:50',
+            'cpassword' => 'required|min:6|same:password',
+        ], [
+            'password.required' => 'Password is required.',
+            'password.min' => 'Must be at least 6 characters.',
+            'password.max' => 'Must not be exceed 50 characters.',
 
-        // $validator = Validator::make($request->all(), [
-        //     'password' => 'required|min:6|max:50',
-        //     'cpassword' => 'required|min:6|same:password',
-        // ], [
-        //     'password.required' => 'Password is required.',
-        //     'password.min' => 'Must be at least 6 characters.',
-        //     'password.max' => 'Must not be exceed 50 characters.',
+            'cpassword.required' => 'Confirm password is required.',
+            'cpassword.min' => 'Must be at least 6 characters.',
+            'cpassword.same' => 'Password did not match.',
+        ]);
 
-        //     'cpassword.required' => 'Confirm password is required.',
-        //     'cpassword.min' => 'Must be at least 6 characters.',
-        //     'cpassword.same' => 'Password did not match.',
-        // ]);
+        if ($validator->fails()) {
+            return response()->json([
+               'status' => 400,
+               'message' => $validator->getMessageBag()
+            ]);
+        } else {
+            // $user = DB::table('users')->where('email', $request->email) -> first();
+            $user = true;
 
-        // if ($validator->fails()) {
-        //     return response()->json([
-        //        'status' => 400,
-        //        'message' => $validator->getMessageBag()
-        //     ]);
-        // } else {
-        //     $user = DB::table('users')->where('email', $request->email) -> first();
-            
+            if ($user) {
+                // User::where('email', $request->email)->update([
+                //     'password' => Hash::make($request->password),
+                // ]);
 
-        //     if ($user) {
-        //         User::where('email', $request->email)->update([
-        //             'password' => Hash::make($request->password),
-        //         ]);
-
-        //         return response()->json([
-        //            'status' => 200,
-        //            'message' => 'New password updated!&nbsp;&nbsp;<a href="/">LOGIN</a>'
-        //         ]);
-        //     } else {
-        //         return response()->json([
-        //            'status' => 401,
-        //            'message' => 'Reset link expired! Request for a new reset password link!'
-        //         ]);
-        //     }
-        // }
+                return response()->json([
+                   'status' => 200,
+                   'message' => 'New password updated!&nbsp;&nbsp;<a href="/">LOGIN</a>'
+                ]);
+            } else {
+                return response()->json([
+                   'status' => 401,
+                   'message' => 'Reset link expired! Request for a new reset password link!'
+                ]);
+            }
+        }
     }
 }
